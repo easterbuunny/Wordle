@@ -1,7 +1,9 @@
 # Wordle_FR
 
  Version : v1.0.0
+ 
  Auteur : Laura Wang 
+ 
  Date de création : 10/12/2022 23:52
 
  # Exécutable 
