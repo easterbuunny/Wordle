@@ -22,6 +22,7 @@ public class Board : MonoBehaviour
 
     private int rowIndex;
     private int columnIndex;
+    private int score = 0;
 
     [Header("States")]
     public Tile.State emptyState;
@@ -32,8 +33,11 @@ public class Board : MonoBehaviour
 
     [Header("UI")]
     public TextMeshProUGUI invalidWordText;
+    public TextMeshProUGUI titleWordText;
+    public TextMeshProUGUI scoreText;
     public Button tryAgainButton;
     public Button newWordButton;
+
 
     private void Awake()
     {
@@ -43,7 +47,7 @@ public class Board : MonoBehaviour
     private void Start()
     {
         LoadData();
-        NewGame();
+        PlayGame();
     }
 
     private void LoadData()
@@ -55,8 +59,15 @@ public class Board : MonoBehaviour
         solutions = textfile.text.Split('\n');
     }
 
+    public void PlayGame()
+    {
+        NewGame();
+        enabled = true;
+    }
+
     public void NewGame()
     {
+        scoreText.text = "Score : "+score.ToString();
         CleanBoard();
         SetRandomWord();
         enabled = true;
@@ -64,7 +75,10 @@ public class Board : MonoBehaviour
 
     public void TryAgain()
     {
+        score = 0;
+        scoreText.text = "Score : "+score.ToString();
         CleanBoard();
+        SetRandomWord();
         enabled = true;
     }
 
@@ -110,7 +124,7 @@ public class Board : MonoBehaviour
     }
 
     /**
-     * Si les lettre sont ид la bonne position elle apparait verte
+     * Si les lettre sont a la bonne position elle apparait verte
      * Si les lettre sont correcte mais pas a la bonne position elle apparait jaune
      * Si la lettre n'apparait dans le mot elle apparait rouge
      */
@@ -124,14 +138,16 @@ public class Board : MonoBehaviour
             string remaining = word;
 
         for(int i = 0; i< row.tiles.Length; i++)
-       {
+        {
             Tile tile = row.tiles[i];
+            //Lettre a la bonne position
             if(tile.letter == word[i])
             {
                 tile.SetState(correctState);
                 remaining = remaining.Remove(i,1);
                 remaining = remaining.Insert(i, " ");
             }
+            //Lettre ├а la mauvaise position
             else if(!word.Contains(tile.letter))
             {
                 tile.SetState(incorrectState);
@@ -141,7 +157,7 @@ public class Board : MonoBehaviour
         for(int i = 0; i< row.tiles.Length; i++)
         {
             Tile tile = row.tiles[i];
-
+            //Lettre n'existe pas la dans le mot
             if(tile.state != correctState && tile.state != incorrectState)
             {
                 if (remaining.Contains(tile.letter))
@@ -161,8 +177,11 @@ public class Board : MonoBehaviour
         if (HasWon(row))
         {
             enabled = false;
+            if (Input.GetKeyDown(KeyCode.Space))
+            {
+                NewGame();
+            }
         }
-                   
 
         rowIndex++;
         columnIndex = 0;
@@ -171,6 +190,7 @@ public class Board : MonoBehaviour
         {
             enabled = false;
         }
+        
     }
 
     //Verifie le mot est un mot correcte
@@ -196,6 +216,10 @@ public class Board : MonoBehaviour
                 return false;
             }
         }
+        score++;
+        scoreText.text = "Score : "+score.ToString();
+        titleWordText.text = "WIN";
+        newWordButton.gameObject.SetActive(true);
         return true;
     }
 
@@ -213,6 +237,7 @@ public class Board : MonoBehaviour
 
         rowIndex = 0;
         columnIndex = 0;
+        titleWordText.text = "Wordle";
     }
 
     private void OnEnable()
@@ -225,6 +250,5 @@ public class Board : MonoBehaviour
     private void OnDisable()
     {
         tryAgainButton.gameObject.SetActive(true);
-        newWordButton.gameObject.SetActive(true);
     }
 }

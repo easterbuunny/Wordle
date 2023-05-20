@@ -3,3 +3,9 @@ Temp
 Library
 UserSettings
 *.zip
+*.csproj
+.gitignore
+.vs
+.vscode
+obj
+*.sln
